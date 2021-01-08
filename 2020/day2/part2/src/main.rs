@@ -1,7 +1,6 @@
 use std::error::Error;
 use std::str::FromStr;
-use std::collections::HashSet;
-use std::io::{self, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
 
@@ -41,8 +40,17 @@ impl FromStr for Policy {
 
 impl Policy {
     fn valid(&self, password: &str) -> bool {
-        let ct = password.matches(self.letter).count();
-        self.min <= ct && ct <= self.max
+        let min_match = match password.chars().nth(self.min-1) {
+            Some(c) => c == self.letter,
+            None => false,
+        };
+        
+        let max_match = match password.chars().nth(self.max-1) {
+            Some(c) => c == self.letter,
+            None => false,
+        };
+
+        min_match ^ max_match
     }
 }
 
