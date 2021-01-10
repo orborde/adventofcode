@@ -16,21 +16,27 @@ fn main() -> Result<(), Box<dyn Error>> {
         treemap.push(data);
     }
 
-    let mut row: usize = 0;
-    let mut col: usize = 0;
-    let mut trees: u32 = 0;
-    while row < treemap.len() {
-        let rowdata = &treemap[row];
-        match rowdata[col % rowdata.len()] {
-            b'#' => { trees = trees.checked_add(1).unwrap() },
-            b'.' => (),
-            x => bail!("unknown char {}", x)
+    let mut product: u32 = 1;
+    for (dc, dr) in vec![(1,1), (3,1), (5,1), (7,1), (1,2)] {
+        let mut row: usize = 0;
+        let mut col: usize = 0;
+        let mut trees: u32 = 0;
+        while row < treemap.len() {
+            let rowdata = &treemap[row];
+            match rowdata[col % rowdata.len()] {
+                b'#' => { trees = trees.checked_add(1).unwrap() },
+                b'.' => (),
+                x => bail!("unknown char {}", x)
+            }
+
+            row = row.checked_add(dr).unwrap();
+            col = col.checked_add(dc).unwrap();
         }
 
-        row = row.checked_add(1).unwrap();
-        col = col.checked_add(3).unwrap();
+        println!("right {} down {} -> {}", dr, dc, trees);
+        product = product.checked_mul(trees).unwrap();
     }
 
-    println!("{}", trees);
+    println!("{}", product);
     Ok(())
 }
